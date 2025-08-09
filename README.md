@@ -1,98 +1,175 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# yourBook API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Lightweight NestJS backend service (currently a scaffold) for a future "yourBook" platform (books, collections, or reading tracker). This README documents the existing codebase (Hello World endpoint) and provides a foundation to grow features fast.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![Technology](https://img.shields.io/badge/Node.js-≥18-brightgreen) ![NestJS](https://img.shields.io/badge/NestJS-v11-red) ![Typescript](https://img.shields.io/badge/TypeScript-5.x-blue) ![License](https://img.shields.io/badge/license-UNLICENSED-lightgrey)
 
-## Description
+## Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. Overview
+2. Tech Stack
+3. Quick Start
+4. Scripts
+5. Environment Variables
+6. Project Structure
+7. API Endpoints
+8. Testing
+9. Linting & Formatting
+10. Build & Run in Production
+11. Roadmap (Planned)
+12. Contributing
+13. License
 
-## Project setup
+## 1. Overview
 
-```bash
-$ yarn install
-```
+Current state: vanilla NestJS starter (single GET / returning "Hello World!"). This will evolve into the yourBook API. Assumptions (replace later): manage books, authors, shelves, user reading progress.
 
-## Compile and run the project
+## 2. Tech Stack
 
-```bash
-# development
-$ yarn run start
+- Runtime: Node.js 18+ (or Bun; `bun.lock` present)
+- Framework: NestJS 11
+- Language: TypeScript 5
+- Testing: Jest (unit + e2e via Supertest)
+- Linting: ESLint 9 + Prettier
 
-# watch mode
-$ yarn run start:dev
+## 3. Quick Start
 
-# production mode
-$ yarn run start:prod
-```
-
-## Run tests
+Install dependencies (choose one package manager):
 
 ```bash
-# unit tests
-$ yarn run test
+# Using bun (fast - recommended if installed)
+bun install
 
-# e2e tests
-$ yarn run test:e2e
+# Or yarn
+yarn install
 
-# test coverage
-$ yarn run test:cov
+# Or npm
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Run in dev watch mode:
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+# Bun
+bun run start:dev
+# Yarn / npm
+yarn start:dev
+npm run start:dev
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Open: <http://localhost:3000>
 
-## Resources
+## 4. Scripts
 
-Check out a few resources that may come in handy when working with NestJS:
+| Script        | Description                          |
+| ------------- | ------------------------------------ |
+| `start`       | Start app once (no watch)            |
+| `start:dev`   | Start with watch mode                |
+| `start:debug` | Watch + inspector                    |
+| `start:prod`  | Run compiled dist (`node dist/main`) |
+| `build`       | Compile TypeScript to `dist/`        |
+| `test`        | Run unit tests                       |
+| `test:e2e`    | Run e2e tests (`test/jest-e2e.json`) |
+| `test:cov`    | Coverage report                      |
+| `lint`        | ESLint fix mode                      |
+| `format`      | Prettier write                       |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+With Bun you can run the same scripts: `bun run test` etc.
 
-## Support
+## 5. Environment Variables
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| Variable | Default | Purpose            |
+| -------- | ------- | ------------------ |
+| `PORT`   | 3000    | HTTP listener port |
 
-## Stay in touch
+Add a `.env` file (not committed) if you expand configuration later.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 6. Project Structure
 
-## License
+```text
+src/
+  main.ts            # App bootstrap (reads PORT)
+  app.module.ts      # Root module
+  app.controller.ts  # GET /
+  app.service.ts     # Simple service
+test/
+  app.e2e-spec.ts    # Example e2e test
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 7. API Endpoints (Current)
+
+| Method | Path | Description         | Example Response |
+| ------ | ---- | ------------------- | ---------------- |
+| GET    | /    | Health/example root | `Hello World!`   |
+
+Example curl:
+
+```bash
+curl -i http://localhost:3000/
+```
+
+## 8. Testing
+
+Unit tests (specs inside `src/`):
+
+```bash
+yarn test        # or bun run test / npm test
+```
+
+E2E tests:
+
+```bash
+yarn test:e2e
+```
+
+Coverage:
+
+```bash
+yarn test:cov
+```
+
+Reports output to `coverage/`.
+
+## 9. Linting & Formatting
+
+```bash
+yarn lint      # ESLint (auto-fix)
+yarn format    # Prettier format
+```
+
+CI suggestion: run `yarn lint && yarn test:cov` on pull requests.
+
+## 10. Build & Run in Production
+
+```bash
+yarn build
+PORT=8080 yarn start:prod
+```
+
+Creates `dist/` then runs compiled JavaScript. Containerization suggestion (future): multi-stage Docker build (builder + runtime slim image).
+
+## 11. Roadmap (Planned)
+
+- [ ] Book entity CRUD
+- [ ] Author profiles
+- [ ] User authentication & JWT
+- [ ] Shelves / collections
+- [ ] Reading progress tracking
+- [ ] Search & pagination
+- [ ] OpenAPI (Swagger) docs (`@nestjs/swagger`)
+- [ ] Docker image + CI pipeline
+
+## 12. Contributing
+
+1. Fork & branch (`feat/<name>`)
+2. Keep commits small & conventional (`feat: add book entity`)
+3. Add/update tests for changes
+4. Run lint & tests before PR
+
+## 13. License
+
+Currently `UNLICENSED` (closed source). If you intend to open source, choose a license (MIT, Apache-2.0, etc.) and update `package.json` + this section.
+
+---
+
+Replace assumptions above as features are implemented.
