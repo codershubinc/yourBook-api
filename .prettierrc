@@ -1,4 +1,18 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "printWidth": 100,
+  "semi": true,
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": [
+        "*.py",
+        "**/*.py"
+      ],
+      "options": {
+        "parser": "babel"
+      }
+    }
+  ]
 }

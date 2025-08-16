@@ -9,5 +9,5 @@ def hello():
 
 
 @app.route("/<s>")
-def hello_var(s):
+def hello_var(s: str):
     return f"Hello, fuck you {s}!"
