@@ -1,13 +1,16 @@
 from flask import Flask
+from flask import request
 
 app = Flask(__name__)
 
 
-@app.route("/")
+@app.get("/")
 def hello():
-    return "Hello, Flask!"
+    return "GET method by flask Hello, Flask!"
 
 
-@app.route("/<s>")
-def hello_var(s: str):
-    return f"Hello, fuck you {s}!"
+@app.route("/user/conf", methods=["POST"])
+def hello_var():
+    print(f"request method {request.method}")
+    print(f"request form {request.form}")
+    return f"request method {request.method}"
