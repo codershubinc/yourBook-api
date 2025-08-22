@@ -15,7 +15,7 @@ class DataBase:
         try:
             if hasattr(app, 'mongo_client') and hasattr(app, 'mongo_db'):
 
-                print("\n +++++++++++++++++++++++++++++++++++++MongoDB connection already established.++++++++++++++++++++++++++++++++++++++\n ")
+                print("\n +++++++++++++++++++++++++++++++++++++ ::: MongoDB connection already established.++++++++++++++++++++++++++++++++++++++\n ")
                 print("Using existing MongoDB connection.")
                 mongo_client = getattr(app, 'mongo_client')
                 # print("Existing MongoDB client:", mongo_client.admin.ping())

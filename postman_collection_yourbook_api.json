@@ -1,0 +1,769 @@
+{
+    "info": {
+        "name": "yourBook API Tests",
+        "description": "Comprehensive test collection for yourBook API - organized by modules",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "version": "2.0.0"
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Global pre-request setup",
+                    "console.log('Running test for:', pm.info.requestName);"
+                ]
+            }
+        }
+    ],
+    "item": [
+        {
+            "name": "System Health",
+            "item": [
+                {
+                    "name": "API Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/health",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "health"
+                            ]
+                        },
+                        "description": "Verify API server is running and database connectivity"
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Database is connected', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.status).to.eql('healthy');",
+                                    "    pm.expect(responseJson.database).to.eql('connected');",
+                                    "});",
+                                    "",
+                                    "pm.test('Response time is acceptable', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+                                    "});",
+                                    "",
+                                    "pm.test('Database name is present', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.db_name).to.exist;",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "API Root Endpoint",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{base_url}}/",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                ""
+                            ]
+                        },
+                        "description": "Check API root endpoint and basic configuration"
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('API welcome message present', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.message).to.include('yourBook API');",
+                                    "});",
+                                    "",
+                                    "pm.test('MongoDB configuration check', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.mongo_uri_configured).to.be.a('boolean');",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "System health and basic connectivity tests"
+        },
+        {
+            "name": "User",
+            "item": [
+                {
+                    "name": "Config",
+                    "item": [
+                        {
+                            "name": "Create User Config - Success (Regular)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"john_{{$randomInt}}\",\n  \"email\": \"john.{{$randomInt}}@example.com\",\n  \"avatar_uri\": \"https://example.com/avatars/john.jpg\",\n  \"user_type\": \"regular\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Create a regular user with all valid fields"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 201', function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});",
+                                            "",
+                                            "pm.test('User created successfully', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.message).to.eql('User created successfully');",
+                                            "    pm.expect(responseJson.user_id).to.exist;",
+                                            "    pm.expect(responseJson.name).to.exist;",
+                                            "    pm.expect(responseJson.user_type).to.eql('regular');",
+                                            "});",
+                                            "",
+                                            "pm.test('Response contains all required fields', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson).to.have.property('user_id');",
+                                            "    pm.expect(responseJson).to.have.property('name');",
+                                            "    pm.expect(responseJson).to.have.property('email');",
+                                            "    pm.expect(responseJson).to.have.property('avatar_uri');",
+                                            "    pm.expect(responseJson).to.have.property('user_type');",
+                                            "    pm.expect(responseJson).to.have.property('created_at');",
+                                            "    pm.expect(responseJson).to.have.property('updated_at');",
+                                            "});",
+                                            "",
+                                            "pm.test('Response time is acceptable', function () {",
+                                            "    pm.expect(pm.response.responseTime).to.be.below(3000);",
+                                            "});",
+                                            "",
+                                            "// Save user data for future tests",
+                                            "if (pm.response.code === 201) {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.environment.set('created_user_id', responseJson.user_id);",
+                                            "    pm.environment.set('created_user_name', responseJson.name);",
+                                            "    pm.environment.set('created_user_email', responseJson.email);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Success (Premium)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"alice_premium_{{$randomInt}}\",\n  \"email\": \"alice.premium.{{$randomInt}}@example.com\",\n  \"avatar_uri\": \"https://example.com/avatars/premium/alice.jpg\",\n  \"user_type\": \"premium\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Create a premium user successfully"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 201', function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});",
+                                            "",
+                                            "pm.test('Premium user created successfully', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.message).to.eql('User created successfully');",
+                                            "    pm.expect(responseJson.user_type).to.eql('premium');",
+                                            "});",
+                                            "",
+                                            "pm.test('Premium user has correct properties', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.name).to.include('premium');",
+                                            "    pm.expect(responseJson.email).to.include('premium');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Default User Type",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"bob_default_{{$randomInt}}\",\n  \"email\": \"bob.default.{{$randomInt}}@example.com\",\n  \"avatar_uri\": \"https://example.com/avatars/bob.jpg\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Create user without user_type field (should default to 'regular')"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 201', function () {",
+                                            "    pm.response.to.have.status(201);",
+                                            "});",
+                                            "",
+                                            "pm.test('User type defaults to regular', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.user_type).to.eql('regular');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Validation Error (Missing Name)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"email\": \"noname@example.com\",\n  \"avatar_uri\": \"https://example.com/avatar.jpg\",\n  \"user_type\": \"regular\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Attempt to create user without required 'name' field"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 400', function () {",
+                                            "    pm.response.to.have.status(400);",
+                                            "});",
+                                            "",
+                                            "pm.test('Missing name validation error', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "    pm.expect(responseJson.error.toLowerCase()).to.include('required');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Validation Error (Missing Email)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"noemail_user_{{$randomInt}}\",\n  \"avatar_uri\": \"https://example.com/avatar.jpg\",\n  \"user_type\": \"regular\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Attempt to create user without required 'email' field"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 400', function () {",
+                                            "    pm.response.to.have.status(400);",
+                                            "});",
+                                            "",
+                                            "pm.test('Missing email validation error', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "    pm.expect(responseJson.error.toLowerCase()).to.include('required');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Validation Error (Missing Avatar URI)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"noavatar_user_{{$randomInt}}\",\n  \"email\": \"noavatar.{{$randomInt}}@example.com\",\n  \"user_type\": \"regular\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Attempt to create user without required 'avatar_uri' field"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 400', function () {",
+                                            "    pm.response.to.have.status(400);",
+                                            "});",
+                                            "",
+                                            "pm.test('Missing avatar_uri validation error', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "    pm.expect(responseJson.error.toLowerCase()).to.include('required');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Duplicate Name Error",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"{{created_user_name}}\",\n  \"email\": \"duplicate.attempt@example.com\",\n  \"avatar_uri\": \"https://example.com/avatars/duplicate.jpg\",\n  \"user_type\": \"regular\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Attempt to create user with duplicate name (uses name from previous successful test)"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 409', function () {",
+                                            "    pm.response.to.have.status(409);",
+                                            "});",
+                                            "",
+                                            "pm.test('Duplicate name error message', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "    pm.expect(responseJson.error.toLowerCase()).to.include('already exists');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Invalid JSON Error",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{ \"name\": \"invalid_json\", \"email\": \"test@example.com\", \"avatar_uri\": \"https://example.com/avatar.jpg\" // invalid comment in json"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Send malformed JSON to test error handling"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 400', function () {",
+                                            "    pm.response.to.have.status(400);",
+                                            "});",
+                                            "",
+                                            "pm.test('JSON parsing error', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "    pm.expect(responseJson.error.toLowerCase()).to.include('json');",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Empty Body Error",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": ""
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Send empty request body"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 400', function () {",
+                                            "    pm.response.to.have.status(400);",
+                                            "});",
+                                            "",
+                                            "pm.test('Empty body error', function () {",
+                                            "    const responseJson = pm.response.json();",
+                                            "    pm.expect(responseJson.error).to.exist;",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Wrong HTTP Method",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Try GET method on POST-only endpoint"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Status code is 405 (Method Not Allowed)', function () {",
+                                            "    pm.response.to.have.status(405);",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Create User Config - Invalid User Type",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"invalid_type_{{$randomInt}}\",\n  \"email\": \"invalid.type.{{$randomInt}}@example.com\",\n  \"avatar_uri\": \"https://example.com/avatar.jpg\",\n  \"user_type\": \"admin\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/user/config",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "user",
+                                        "config"
+                                    ]
+                                },
+                                "description": "Test with user_type that may not be in allowed values (if validation exists)"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "// This test depends on your validation rules",
+                                            "// Adjust expected behavior based on your implementation",
+                                            "pm.test('Response status is valid', function () {",
+                                            "    // Should be either 201 (accepted) or 400 (validation error)",
+                                            "    pm.expect([201, 400]).to.include(pm.response.code);",
+                                            "});",
+                                            "",
+                                            "if (pm.response.code === 201) {",
+                                            "    pm.test('Admin user type accepted', function () {",
+                                            "        const responseJson = pm.response.json();",
+                                            "        pm.expect(responseJson.user_type).to.eql('admin');",
+                                            "    });",
+                                            "} else if (pm.response.code === 400) {",
+                                            "    pm.test('Invalid user type rejected', function () {",
+                                            "        const responseJson = pm.response.json();",
+                                            "        pm.expect(responseJson.error).to.exist;",
+                                            "    });",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "All test cases for user configuration endpoint (/user/config)"
+                }
+            ],
+            "description": "User management endpoints - organized by functionality"
+        },
+        {
+            "name": "Books",
+            "item": [
+                {
+                    "name": "Book Management",
+                    "item": [
+                        {
+                            "name": "Create Book - Coming Soon",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"title\": \"Sample Book\",\n  \"author\": \"{{created_user_name}}\",\n  \"description\": \"A sample book for testing\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/books",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "books"
+                                    ]
+                                },
+                                "description": "Placeholder for future book creation endpoint"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Endpoint not yet implemented', function () {",
+                                            "    // This endpoint doesn't exist yet",
+                                            "    pm.expect([404, 405]).to.include(pm.response.code);",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Book-related endpoints (future implementation)"
+                }
+            ],
+            "description": "Book management functionality"
+        },
+        {
+            "name": "Sharing",
+            "item": [
+                {
+                    "name": "Share Management",
+                    "item": [
+                        {
+                            "name": "Share Book - Coming Soon",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"book_id\": \"sample_book_id\",\n  \"shared_with\": \"{{created_user_email}}\",\n  \"permissions\": \"read\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/sharing",
+                                    "host": [
+                                        "{{base_url}}"
+                                    ],
+                                    "path": [
+                                        "sharing"
+                                    ]
+                                },
+                                "description": "Placeholder for future sharing endpoint"
+                            },
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.test('Endpoint not yet implemented', function () {",
+                                            "    // This endpoint doesn't exist yet",
+                                            "    pm.expect([404, 405]).to.include(pm.response.code);",
+                                            "});"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    "description": "Sharing-related endpoints (future implementation)"
+                }
+            ],
+            "description": "Book sharing functionality"
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:5001",
+            "type": "string",
+            "description": "Base URL for the yourBook API"
+        }
+    ],
+    "auth": {
+        "type": "noauth"
+    }
+}
