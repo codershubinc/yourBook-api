@@ -12,6 +12,7 @@ MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "myapp")
 # Do not create a Mongo client at import time to avoid DNS/SRV delays or failures.
 # Controllers will return 500 if the client isn't initialized.
 app.mongo_client = MongoClient(MONGO_URI)  # type: ignore[attr-defined]
+print("connecting to mongo db client :::", app.mongo_client)
 
 
 @app.route('/')
