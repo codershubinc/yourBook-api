@@ -61,6 +61,7 @@ class user_config:
 
             mongo_db = getattr(current_app, 'mongo_db')
             if mongo_db == None:
+                print("MONGO............")
                 reconnect_db = DB.connect()
                 if not bool(reconnect_db):
                     return {"error": "Database connection unavailable"}, 500
@@ -72,6 +73,61 @@ class user_config:
 
             user['_id'] = str(user['_id'])  # Convert ObjectId to string
             return user, 200
+
+        except Exception as e:
+            return {"error": str(e)}, 500
+
+    def update_user_config(
+        self,
+        name: str,
+        email: str,
+        avatar_uri: str,
+        createdAt: str,
+        updatedAt: str,
+        user_type: str = "regular"
+    ) -> Tuple[Dict[str, Any], int]:
+        try:
+            mongo_db = getattr(current_app, 'mongo_db')
+            print("MONGO............")
+            if mongo_db == None:
+                reconnect_db = DB.connect()
+                if not bool(reconnect_db):
+                    return {"error": "Database connection unavailable"}, 500
+
+            # Check if user exists
+            existing_user = mongo_db.user_config.find_one({"email": email})
+            if not existing_user:
+                return {"error": "User not found"}, 404
+
+            # Update user document
+            updated_doc = {
+                "name": name,
+                "avatar_uri": avatar_uri,
+                "user_type": user_type,
+                "createdAt": createdAt,
+                "updatedAt": updatedAt
+            }
+
+            # Save to MongoDB
+            result = mongo_db.user_config.update_one(
+                {"email": email},
+                {"$set": User_Config_Schema(**updated_doc)}
+            )
+
+            if result.modified_count == 0:
+                return {"message": "No changes made"}, 200
+
+            return {
+                "message": "User updated successfully",
+                "user": {
+                    "email": email,
+                    "name": name,
+                    "user_type": user_type,
+                    "avatar_uri": avatar_uri,
+                    "createdAt": createdAt,
+                    "updatedAt": updatedAt
+                }
+            }, 200
 
         except Exception as e:
             return {"error": str(e)}, 500

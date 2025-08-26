@@ -49,3 +49,34 @@ def get_user_config():
 
     response, status = controller.get_user_config(email=email)
     return jsonify(response), status
+
+
+@user_config_bp.route('/config', methods=['PATCH'])
+def update_user_config():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "JSON required"}), 400
+
+    email: str = data.get('email')
+    name: str = data.get('name')
+    avatar_uri: str = data.get('avatar_uri')
+
+    if not email:
+        return jsonify({"error": "email required"}), 400
+
+    # Generate updated timestamp
+    from datetime import datetime
+    updated_time = datetime.now().isoformat()
+
+    response, status = controller.update_user_config(
+        email=email,
+        name=name,
+        avatar_uri=avatar_uri,
+        updatedAt=updated_time,
+        # Assuming createdAt is sent in the request
+        createdAt=data.get('createdAt', ''),
+        user_type=data.get('user_type', 'regular')
+    )
+
+    return jsonify(response), status
