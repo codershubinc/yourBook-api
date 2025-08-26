@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if __name__ == '__main__':
-    # Connect to database before starting the app
-    DB.connect()
-    # register blueprints
-    register_blueprints(app)
-    app.run(debug=True)
+print("Starting the Flask application...", __name__)
+# Connect to database before starting the app
+DB.connect()
+# register blueprints
+print("Registering the Blueprints now")
+register_blueprints(app)
+app.run(debug=True)

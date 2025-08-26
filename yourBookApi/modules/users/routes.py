@@ -38,3 +38,14 @@ def create_user_config():
     )
 
     return jsonify(response), status
+
+
+@user_config_bp.route('/config', methods=['GET'])
+def get_user_config():
+    email = request.get_json().get('email') if request.get_json() else None
+
+    if not email:
+        return jsonify({"error": "email required"}), 400
+
+    response, status = controller.get_user_config(email=email)
+    return jsonify(response), status

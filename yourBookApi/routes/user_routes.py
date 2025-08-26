@@ -10,4 +10,5 @@ bps = [
 
 def register_blueprints(app: Flask) -> None:
     for bp in bps:
+        print("Registering the BPs")
         app.register_blueprint(bp)
